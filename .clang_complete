@@ -1,0 +1,16 @@
+-I.
+-IUser/inc
+-IUser
+
+-ILibraries/CMSIS/Device/ST/STM32F4xx/Include
+-ILibraries/STM32F4xx_StdPeriph_Driver/inc
+-ILibraries/CMSIS/Include
+
+-IUSER/BSP/inc
+
+-IUser/FATFS/src
+-IUser/FATFS/exfuns
+
+-ID:/Program Files (x86)/keil5/ARM/ARMCC/include
+-DUSE_STDPERIPH_DRIVER
+-DSTM32F429_439xx

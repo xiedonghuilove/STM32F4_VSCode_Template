@@ -1,0 +1,47 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/",
+                    "D:/Program Files (x86)/keil5/ARM/ARMCC/include",
+                    "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
+                    "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                    "${workspaceFolder}/Libraries/CMSIS/Include",
+                    "${workspaceFolder}/USER/BSP/inc",
+                    "${workspaceFolder}/User/FATFS/src",
+                    "${workspaceFolder}/User/FATFS/exfuns",
+                    "${workspaceFolder}/User/inc",
+                    "${workspaceFolder}/User"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceFolder}/",
+                "D:/Program Files (x86)/keil5/ARM/ARMCC/include",
+                "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/CMSIS/Include",
+                "${workspaceFolder}/USER/BSP/inc",
+                "${workspaceFolder}/User/FATFS/src",
+                "${workspaceFolder}/User/FATFS/exfuns",
+                "${workspaceFolder}/User/inc",
+                "${workspaceFolder}/User"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__CC_ARM",
+                "USE_STDPERIPH_DRIVER",
+                "STM32F429_439xx"
+            ],
+            "compilerPath": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

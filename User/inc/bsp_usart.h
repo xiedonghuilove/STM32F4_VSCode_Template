@@ -44,7 +44,7 @@
 #define RS232_USART_IRQHandler                  USART1_IRQHandler
 #define RS232_USART_IRQ                 		USART1_IRQn
 
-extern uint8_t g_ucaUSART2_TX_BUF[USART_REC_LEN];
+extern uint8_t g_ucaRS232TxBuf[USART_REC_LEN];
 /************************************************************/
 //引脚定义
 /*
@@ -89,7 +89,7 @@ extern uint8_t g_ucaUSART2_TX_BUF[USART_REC_LEN];
 #define RS485EN_RX()       PAout(15)=0
 #define RS485EN_TX()       PAout(15)=1
 
-extern uint8_t g_ucaUSART3_TX_BUF[USART_REC_LEN];
+extern uint8_t g_ucaRS485TxBuf[USART_REC_LEN];
 
 /************************************************************/
 

@@ -39,12 +39,19 @@ void osGetTemp_500MS_Task(void)
 {
 	
 	LED2_Out() = !LED2_Out();
-
+    //RS232
     if(DMA_GetFlagStatus(RS232_USART_DMA_STREAM,DMA_FLAG_TCIF7)!=RESET)//等待DMA2_Steam7传输完成
     {
         DMA_ClearFlag(RS232_USART_DMA_STREAM,DMA_FLAG_TCIF7);//清除DMA2_Steam7传输完成标志
     }
     DMA_Enable(RS232_USART_DMA_STREAM,15);     //开始一次DMA传输！
+
+    //RS422
+    if(DMA_GetFlagStatus(RS485_USART_DMA_STREAM,DMA_FLAG_TCIF6)!=RESET)//等待DMA2_Steam7传输完成
+    {
+        DMA_ClearFlag(RS485_USART_DMA_STREAM,DMA_FLAG_TCIF6);//清除DMA2_Steam7传输完成标志
+    }
+    DMA_Enable(RS485_USART_DMA_STREAM,15);     //开始一次DMA传输！
 }
 
 
@@ -113,11 +120,13 @@ void TaskSysClk_Init(void)
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
     NVIC_InitTypeDef NVIC_InitStructure;
     RCC_ClocksTypeDef Get_RCC_Clocks;
-
+    
+    RCC_GetClocksFreq(&Get_RCC_Clocks);
+    
     RCC_APB1PeriphClockCmd(OS_TASK_CLK,ENABLE);
 
     TIM_TimeBaseInitStruct.TIM_Prescaler = 1000-1;//定时器的预分频系数
-    TIM_TimeBaseInitStruct.TIM_Period = Get_RCC_Clocks.SYSCLK_Frequency/1000000-1;//定时器的计数值
+    TIM_TimeBaseInitStruct.TIM_Period = Get_RCC_Clocks.PCLK2_Frequency/1000000-1;//定时器的计数值
     TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(OS_TASK_TIM,&TIM_TimeBaseInitStruct);

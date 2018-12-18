@@ -11,8 +11,8 @@
 
 #include "bsp_usart.h"
 
-uint8_t g_ucaUSART2_TX_BUF[USART_REC_LEN] = {0xfe,0xff,0x01,0x02,0x03,0x04,0x05};     //接收缓冲,最大USART_REC_LEN个字节.
-uint8_t g_ucaUSART3_TX_BUF[USART_REC_LEN] = {0};     //接收缓冲,最大USART_REC_LEN个字节.
+uint8_t g_ucaRS232TxBuf[USART_REC_LEN] = {0xfe,0xff,0x01,0x02,0x03,0x04,0x05};     //接收缓冲,最大USART_REC_LEN个字节.
+uint8_t g_ucaRS485TxBuf[USART_REC_LEN] = {0xfe,0xff,0x01,0x02,0x03,0x04,0x05};     //接收缓冲,最大USART_REC_LEN个字节.
 
 uint8_t g_ucaUsart2RxBuf[50] = {0};
 uint16_t g_usUsart2RxState = 0;     //接受状态标记
@@ -89,7 +89,7 @@ void RS232_USART_Config(void)
 
 	DMA_InitStructure.DMA_Channel = RS232_USART_DMA_CHANNEL;//通道选择
 	DMA_InitStructure.DMA_PeripheralBaseAddr = RS232_USART_DR_BASE;//DMA外设地址
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)g_ucaUSART2_TX_BUF;  //内存地址(要传输的变量的指针)
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)g_ucaRS232TxBuf;  //内存地址(要传输的变量的指针)
 	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;  //方向：从内存到外设
 	DMA_InitStructure.DMA_BufferSize = SENDBUFF_SIZE; //传输大小DMA_BufferSize=SENDBUFF_SIZE
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;  //外设地址不增
@@ -108,7 +108,8 @@ void RS232_USART_Config(void)
 	while(DMA_GetCmdStatus(RS232_USART_DMA_STREAM) != ENABLE)
 	{
 	}/* 等待DMA数据流有效*/
-
+    
+    USART_DMACmd(RS232_USART,USART_DMAReq_Tx,ENABLE);  //使能串口的DMA发送。
 }
 
 /*
@@ -130,7 +131,7 @@ void RS485_USART_Init(void)
 	RCC_AHB1PeriphClockCmd(RS485_USART_RX_GPIO_CLK|RS485_USART_TX_GPIO_CLK,ENABLE);
 	RCC_APB1PeriphClockCmd(RS485_USART_CLK, ENABLE);
 	RCC_AHB1PeriphClockCmd(RS485_USART_DMA_CLK, ENABLE);
-	RCC_AHB1PeriphClockCmd(RS485_EN_GPIO_CLK,ENABLE);//485_EN引脚
+	// RCC_AHB1PeriphClockCmd(RS485_EN_GPIO_CLK,ENABLE);//485_EN引脚
 
 	/* GPIO初始化 */
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -138,9 +139,9 @@ void RS485_USART_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 
 	/* 配置485_EN引脚为推挽输出  */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Pin = RS485_EN_PIN  ;
-	GPIO_Init(RS485_EN_GPIO_PORT, &GPIO_InitStructure);
+	// GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	// GPIO_InitStructure.GPIO_Pin = RS485_EN_PIN  ;
+	// GPIO_Init(RS485_EN_GPIO_PORT, &GPIO_InitStructure);
 
 
 	/* 配置Tx引脚为复用功能  */
@@ -171,7 +172,7 @@ void RS485_USART_Init(void)
 	/* 使能串口接收中断 */
 	USART_ITConfig(RS485_USART, USART_IT_RXNE, ENABLE);
 	/* 禁止发送完成中断 */
-	USART_ITConfig(RS485_USART, USART_IT_TC, DISABLE);
+	// USART_ITConfig(RS485_USART, USART_IT_TC, DISABLE);
 
 	/* 嵌套向量中断控制器NVIC配置 */
 	NVIC_InitStructure.NVIC_IRQChannel = RS485_USART_IRQ;  /* 配置USART为中断源 */
@@ -187,7 +188,7 @@ void RS485_USART_Init(void)
 
 	DMA_InitStructure.DMA_Channel = RS485_USART_DMA_CHANNEL;//通道选择
 	DMA_InitStructure.DMA_PeripheralBaseAddr = RS485_USART_DR_BASE;//DMA外设地址
-	DMA_InitStructure.DMA_Memory0BaseAddr = (u32)g_ucaUSART3_TX_BUF;  //内存地址(要传输的变量的指针)
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)g_ucaRS485TxBuf;  //内存地址(要传输的变量的指针)
 	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;  //方向：从内存到外设
 	DMA_InitStructure.DMA_BufferSize = SENDBUFF_485_SIZE; //传输大小DMA_BufferSize=SENDBUFF_SIZE
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;  //外设地址不增
@@ -207,8 +208,8 @@ void RS485_USART_Init(void)
 	{
 	}/* 等待DMA数据流有效*/
 
-	RS485EN_RX();//默认为接受模式
-
+	// RS485EN_RX();//默认为接受模式
+    USART_DMACmd(RS485_USART,USART_DMAReq_Tx,ENABLE);  //使能串口的DMA发送。
 }
 
 /*

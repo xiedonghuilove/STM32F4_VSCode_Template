@@ -26,7 +26,7 @@ int main(void)
 	LED_GPIO_Config();
 	TaskSysClk_Init();				//1ms任务时钟
     RS232_USART_Config();
-    USART_DMACmd(RS232_USART,USART_DMAReq_Tx,ENABLE);  //使能串口的DMA发送。
+    RS485_USART_Init();
  
 	while(1)
 	{

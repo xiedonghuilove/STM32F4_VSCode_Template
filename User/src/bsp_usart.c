@@ -10,11 +10,8 @@
   */
 
 #include "bsp_usart.h"
-#include "command_parse.h"
-#include "data.h"
-#include "bsp_warning.h"
 
-uint8_t g_ucaUSART2_TX_BUF[USART_REC_LEN] = {0};     //接收缓冲,最大USART_REC_LEN个字节.
+uint8_t g_ucaUSART2_TX_BUF[USART_REC_LEN] = {0xfe,0xff,0x01,0x02,0x03,0x04,0x05};     //接收缓冲,最大USART_REC_LEN个字节.
 uint8_t g_ucaUSART3_TX_BUF[USART_REC_LEN] = {0};     //接收缓冲,最大USART_REC_LEN个字节.
 
 uint8_t g_ucaUsart2RxBuf[50] = {0};
@@ -42,7 +39,7 @@ void RS232_USART_Config(void)
 
 	//使能时钟
 	RCC_AHB1PeriphClockCmd(RS232_USART_RX_GPIO_CLK|RS232_USART_TX_GPIO_CLK,ENABLE);
-	RCC_APB1PeriphClockCmd(RS232_USART_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(RS232_USART_CLK, ENABLE);
 	RCC_AHB1PeriphClockCmd(RS232_USART_DMA_CLK, ENABLE);
 
 	/* GPIO初始化 */
@@ -92,7 +89,7 @@ void RS232_USART_Config(void)
 
 	DMA_InitStructure.DMA_Channel = RS232_USART_DMA_CHANNEL;//通道选择
 	DMA_InitStructure.DMA_PeripheralBaseAddr = RS232_USART_DR_BASE;//DMA外设地址
-	DMA_InitStructure.DMA_Memory0BaseAddr = (u32)g_ucaUSART2_TX_BUF;  //内存地址(要传输的变量的指针)
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)g_ucaUSART2_TX_BUF;  //内存地址(要传输的变量的指针)
 	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;  //方向：从内存到外设
 	DMA_InitStructure.DMA_BufferSize = SENDBUFF_SIZE; //传输大小DMA_BufferSize=SENDBUFF_SIZE
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;  //外设地址不增
@@ -277,7 +274,7 @@ void RS232_USART_IRQHandler(void)
                         UART2_RxData.Package.Length = UART2_RxTmp.Buff[5];
                         UART2_RxData.Package.Data = (*(uint32_t*)(UART2_RxTmp.Buff+6));//6 7 8 9
                         UART2_RxData.Package.CheckSum = (UART2_RxTmp.Buff[10]<<8) | UART2_RxTmp.Buff[11];
-                        PC_CommandParse(&UART2_RxData.Package,&tMasterData);
+                        // PC_CommandParse(&UART2_RxData.Package,&tMasterData);
                     }
                     UART2_RxData.FrameStatus = HOST_FRAME_IDLE;//重新开始
                 }
@@ -298,7 +295,7 @@ void RS232_USART_IRQHandler(void)
 */
 void RS485_USART_IRQHandler(void)
 {
-	uint8_t res = 0,i = 0;
+	uint8_t res = 0;
 	uint16_t check_sum_data = 0;
 	if(USART_GetITStatus( RS485_USART, USART_IT_RXNE ) != RESET)
 	{
@@ -353,21 +350,21 @@ void RS485_USART_IRQHandler(void)
                         tUART3_RxData.Package.pData = (uint16_t*)(tUART3_RxTmp.Buff+6);//6 7
                         tUART3_RxData.Package.CheckSum = (tUART3_RxTmp.Buff[tUART3_RxTmp.Buff[5]+6]<<8) | tUART3_RxTmp.Buff[tUART3_RxTmp.Buff[5]+6+1];
                         // PC_CommandParse(&tUART3_RxData.Package,&tMasterData);
-                        for (i = 1;i<=MODULE_NUM;i++)
-                        {
-                            if(tUART3_RxData.Package.SlaveAddr == i)break;
-                        }
+                        // for (i = 1;i<=MODULE_NUM;i++)
+                        // {
+                        //     if(tUART3_RxData.Package.SlaveAddr == i)break;
+                        // }
 
-                        //急停报警，清除低压报警
-                        if(tMasterData.AlarmLowBit & ERROR_MASTER_E_STOP)
-                        {
-                            taModuleData[i-1].SubControlAlarm &= ~ERROR_SUB_LOW_V;
-                        }
+                        // //急停报警，清除低压报警
+                        // if(tMasterData.AlarmLowBit & ERROR_MASTER_E_STOP)
+                        // {
+                        //     taModuleData[i-1].SubControlAlarm &= ~ERROR_SUB_LOW_V;
+                        // }
                         
-                        RS485_CommandParse(&tUART3_RxData.Package,tUART3_RxData.Package.Length/2, &tUART3_RxTmp.Buff[6], &taModuleData[i-1]);
-                        tMasterData.Power = taModuleData[i-1].SubControlPower;
-                        //添加模块异常
-                        g_ulaModuleCommunicationCnt[i-1] = 0;
+                        // RS485_CommandParse(&tUART3_RxData.Package,tUART3_RxData.Package.Length/2, &tUART3_RxTmp.Buff[6], &taModuleData[i-1]);
+                        // tMasterData.Power = taModuleData[i-1].SubControlPower;
+                        // //添加模块异常
+                        // g_ulaModuleCommunicationCnt[i-1] = 0;
 
                     }
                     tUART3_RxData.FrameStatus = HOST_FRAME_IDLE;//重新开始

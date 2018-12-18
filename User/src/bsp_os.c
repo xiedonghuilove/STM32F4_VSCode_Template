@@ -9,6 +9,9 @@
  */
 #include "bsp_os.h"
 #include "bsp_led.h"
+#include "bsp_usart.h"
+#include "bsp_dma.h"
+
 
 
 
@@ -36,7 +39,12 @@ void osGetTemp_500MS_Task(void)
 {
 	
 	LED2_Out() = !LED2_Out();
-    
+
+    if(DMA_GetFlagStatus(RS232_USART_DMA_STREAM,DMA_FLAG_TCIF7)!=RESET)//等待DMA2_Steam7传输完成
+    {
+        DMA_ClearFlag(RS232_USART_DMA_STREAM,DMA_FLAG_TCIF7);//清除DMA2_Steam7传输完成标志
+    }
+    DMA_Enable(RS232_USART_DMA_STREAM,15);     //开始一次DMA传输！
 }
 
 
@@ -44,6 +52,7 @@ void osGetTemp_500MS_Task(void)
 void task3(void)
 {
     LED3_Out() = !LED3_Out();
+//    printf("Task3\r\n");
 }
 
 /*
